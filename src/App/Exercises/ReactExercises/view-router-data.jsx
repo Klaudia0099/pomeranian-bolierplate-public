@@ -8,6 +8,7 @@ import { MaterialUIBasicElementsMetaData } from './MaterialUIBasicElements/route
 import { LocalDevAndFetchMetaData } from './LocalDevAndFetch/router-data';
 import { TodoListMetaData } from './TodoList/router-data';
 import { ReactUseRefRoute } from './ReactUseRef/router-data';
+import { form2MetaData } from './Form2/router-data';
 
 export const blockRouterMetaData = [
   SubRouteExampleMetaData,
@@ -18,5 +19,6 @@ export const blockRouterMetaData = [
   LocalDevAndFetchMetaData,
   TodoListMetaData,
   MaterialUIBasicElementsMetaData,
+  form2MetaData,
 ];
 export const blockRouterData = getParsedRouterDataList(blockRouterMetaData);
