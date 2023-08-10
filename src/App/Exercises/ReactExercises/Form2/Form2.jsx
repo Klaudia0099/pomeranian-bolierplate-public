@@ -3,6 +3,20 @@ import { FieldSection } from './FieldSection/FieldSection';
 import './Form2.css';
 import { MainSection } from './MainSection/MainSection';
 import { RadioButtons } from './RadioButtons/RadioButtons';
+import { Checkboxes } from './Checkboxes/Checkboxes';
+import Select from 'react-select'
+
+const options = [
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' }
+]
+
+const validateEmail = (value) => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  return emailPattern.test(value);
+};
 
 const productOptions = [
   { value: 'frontend', label: 'kurs front-end' },
@@ -16,6 +30,20 @@ const paymentTypeOptions = [
   { value: 'transfer', label: 'przelew tradycyjny' },
 ];
 
+const additionalOptionList = [
+  { fieldName: 'github', label: 'Intro do GitHub' },
+  { fieldName: 'environment', label: 'Ustawienia środowiska' },
+  { fieldName: 'extraDocuments', label: 'Materiały dodatkowe' },
+];
+
+const requiredFields = [
+  'nameAndSurname',
+  'email',
+  'product',
+  'paymentType',
+  'consents',
+];
+
 export function Form2() {
   const [formData, setFormData] = useState({
     product: 'devops',
@@ -25,26 +53,57 @@ export function Form2() {
       environment: false,
       extraDocuments: true,
     },
+    nameAndSurname: '',
+    email: '',
+    details: '',
+    consents: false,
   });
+  const [isAllRequiredFieldsFilled, setIsAllRequiredFieldsFilled] =
+    useState(true);
 
-  console.log('formData: ', formData);
+  const [isEmailValid, setIsEmailValid] = useState();
 
-  function updateAdditionalOptions(optionName, value) {}
+  const isNameAndSurnameValid =
+    formData.nameAndSurname.length > 0
+      ? formData.nameAndSurname.trim().includes(' ')
+      : true;
+
+  const isFieldsValid =
+    isEmailValid && isNameAndSurnameValid && isAllRequiredFieldsFilled;
+
+  function updateAdditionalOptions(fieldName, newValue) {
+    setIsAllRequiredFieldsFilled(true);
+    setFormData({
+      ...formData,
+      additionalOptions: {
+        ...formData.additionalOptions,
+        [fieldName]: newValue,
+      },
+    });
+  }
 
   function updateFormData(onChangeEvent) {
+    setIsAllRequiredFieldsFilled(true);
     setFormData({
       ...formData,
       [onChangeEvent.target.name]: onChangeEvent.target.value,
     });
   }
 
+  function handleSubmit() {
+    const { nameAndSurname, email, product, paymentType, consents } = formData;
+    if (nameAndSurname && email && product && paymentType && consents) {
+      console.log('DANE WYSŁANE POPRAWNIE: ', formData);
+    } else {
+      setIsAllRequiredFieldsFilled(false);
+    }
+  }
+
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        console.log('product:', event.target.product.value);
-        console.log('paymentType:', event.target.product.value);
-        console.log('additionalOption:', event.target.additionalOption.checked);
+        handleSubmit();
       }}
     >
       <MainSection title="ZAMÓWIENIE PRODUKTU">
@@ -62,6 +121,20 @@ export function Form2() {
               </option>
             ))}
           </select>
+
+          <Select 
+            value={productOptions.find (
+              (item) => item.value === formData.product
+            )} 
+            options={productOptions}
+            onChange={(selectedItem) => {
+              setFormData ({
+                ...formData,
+                product: selectedItem.value,
+              });
+            }} 
+          />
+
         </FieldSection>
         <FieldSection title="Wybierz formę płatności*">
           <RadioButtons
@@ -72,16 +145,91 @@ export function Form2() {
           />
         </FieldSection>
         <FieldSection title="Opcje dodatkowe do zamówienia">
-          <input type="checkbox" name="github" />
-          <input type="checkbox" name="env" />
-          <input type="checkbox" name="extraDocs" />
+          <Checkboxes
+            list={additionalOptionList.map((item) => {
+              return {
+                ...item,
+                isChecked: formData.additionalOptions[item.fieldName],
+              };
+            })}
+            onChange={updateAdditionalOptions}
+          />
         </FieldSection>
       </MainSection>
 
       <MainSection title="DANE DO REALIZACJI ZAMÓWIENIA">
-        <div>test</div>
+        <FieldSection title="Imię i nazwisko">
+          <input
+            type="text"
+            name="nameAndSurname"
+            value={formData.nameAndSurname}
+            onChange={updateFormData}
+            className={!isNameAndSurnameValid ? 'input-field-error' : ''}
+          />
+          {!isNameAndSurnameValid && (
+            <p className="input-field-error-message">
+              Nie podałeś(-aś) nazwiska!
+            </p>
+          )}
+        </FieldSection>
+        <FieldSection title="Email">
+          <input
+            type="text"
+            name="email"
+            value={formData.email}
+            onChange={updateFormData}
+            className={isEmailValid === false ? 'input-field-error' : ''}
+            onBlur={() => {
+              setIsEmailValid(validateEmail(formData.email));
+            }}
+          />
+          {isEmailValid === false && (
+            <p className="input-field-error-message">Email jest niepoprawny!</p>
+          )}
+        </FieldSection>
+
+        <FieldSection title="Uwagi dodatkowe">
+          <textarea
+            name="details"
+            cols="40"
+            rows="10"
+            style={{ resize: 'none' }}
+            value={formData.details}
+            onChange={updateFormData}
+          />
+        </FieldSection>
       </MainSection>
-      <button type="submit">WYŚLIJ</button>
+
+      <MainSection title="ZGODY">
+        <FieldSection title="Regulamin">
+          <Checkboxes
+            list={[
+              {
+                fieldName: 'consents',
+                label: 'apceptuję regulamin*',
+                isChecked: formData.consents,
+              },
+            ]}
+            onChange={(_, newValue) => {
+              setIsAllRequiredFieldsFilled(true);
+              setFormData({
+                ...formData,
+                consents: newValue,
+              });
+            }}
+          />
+        </FieldSection>
+      </MainSection>
+
+      {!isAllRequiredFieldsFilled && (
+        <p className="input-field-error-message">
+          Wypełnij wszystkie pola wymagane!
+        </p>
+      )}
+
+      <button type="submit" disabled={!isFieldsValid}>
+        WYŚLIJ
+      </button>
     </form>
   );
 }
