@@ -21,6 +21,7 @@ import { blockRouterMetaData as blockRouterMetaDataJsThisKeyWord } from './Exerc
 import { blockRouterMetaData as blockRouterMetaDataJsPromises } from './Exercise-js-promises/router-data';
 import { blockRouterMetaData as blockRouterMetaDataPromises } from './Exercise-js-promises1/router-data';
 import { PromiseMethodsTrainingMetaData } from './Exercise-js-promises-methods-training/router-data'
+import { TestingMetaData } from './Testing/router-data';
 
 
 
@@ -47,8 +48,8 @@ export const blockRouterMetaData = [
   blockRouterMetaDataJsPromises,
   blockRouterMetaDataPromises,
   PromiseMethodsTrainingMetaData,
-
   HitTheMoleGameMetaData,
   MemoGameMetaData,
+  TestingMetaData,
 ];
 export const blockRouterData = getParsedRouterDataList(blockRouterMetaData);
