@@ -20,6 +20,7 @@ export const counterSlice = createSlice({
   reducers: {
     increment: (state) => {
 state.value += 1;
+// state.value = state.value +1;
 saveToLocalStorage(state.value); 
     },
     incrementBy: (state, action) => {
