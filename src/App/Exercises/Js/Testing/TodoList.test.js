@@ -1,6 +1,9 @@
 import { getRandomInt } from "./TodoList";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { ToDoList } from "./TodoList";
+import { act } from "@testing-library/react";
+import { setupServer } from 'msw/lib/node';
+import { rest } from 'msw';
 
 const testData = [
     {
@@ -20,6 +23,22 @@ const testData = [
       createdAt: '2023-08-25T10:36:34.700Z',
     },
   ];
+
+  const baseURL = 'http://localhost:3333';
+  const basePath = `${baseURL}/api/todo`;
+  const DELAY = 100;
+  const server = setupServer(
+    rest.get(basePath, (_req, res, ctx) => {
+      return res(ctx.delay(DELAY), ctx.json(testData));
+    }),
+    rest.get(basePath, (_req, res, ctx) => {
+      return res(ctx.delay(DELAY), ctx.json({ title: 'TEST '}));
+    }),
+    rest.delete(`${basePath}/:id`, (req, res, ctx) => {
+      const { id } = req.params;
+      return res(ctx.delay(DELAY), ctx.json({ id }));
+    })
+  );
 
 describe ('getRandomInt', ()=>{
     //5 => random = 0.999 =>
@@ -47,10 +66,12 @@ describe ('getRandomInt', ()=>{
 
 describe('ToDoList', () => {
   beforeAll(() => {
-    jest.spyOn(window, 'fetch');
+    // jest.spyOn(window, 'fetch');
+    server.listen();
   });
   afterAll(() => {
-    jest.restoreAllMocks();
+    server.close();
+    // jest.restoreAllMocks();
   });
   it('has header = todo list', async () => {
     fetch.mockImplementation(() =>
