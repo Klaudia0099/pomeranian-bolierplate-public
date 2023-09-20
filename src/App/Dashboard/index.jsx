@@ -38,7 +38,7 @@ export const Dashboard = () => {
       sectionTitle: 'Tech stack',
       icon: <img src={CodeIcon} alt="business card resume" />,
       description: 'technological stack implemented during the course',
-      link: '/tech',
+      link: '/techstack',
     },
     {
       sectionTitle: 'FAQ',
