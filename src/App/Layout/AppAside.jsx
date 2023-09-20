@@ -29,7 +29,7 @@ export function AppAside() {
             </NavLink>
           </li>
           <li>
-            <NavLink className="aside-row" to="exercises">
+            <NavLink className="aside-row" to="Exercises">
               <EditIcon className="menu-icon" />
               Exercises
             </NavLink>
@@ -52,11 +52,11 @@ export function AppAside() {
             </NavLink>
           </li>
           <li>
-          <NavLink className="aside-row" to="tech">
+          <NavLink className="aside-row" to="techstack">
               <img
                 src={CodeIcon}
                 className="menu-icon"
-                alt="Tech"
+                alt="Techstack"
                 style={{ width: '23px', height: '23px' }}
               />
               Tech stack
